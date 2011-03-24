@@ -1,0 +1,3 @@
+Simple implementation of CDMI client library in Python.
+
+Example of usage can be seen in client_example.py.
