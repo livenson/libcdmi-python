@@ -1,5 +1,5 @@
 import urllib2
-from vcdm.common import CDMIRequestWithMethod, CDMI_DATA, CDMI_OBJECT
+from common import CDMIRequestWithMethod, CDMI_DATA, CDMI_OBJECT
    
 try:
     import json
@@ -12,9 +12,12 @@ class BlobOperations():
     
     def __init__(self, endpoint):
         self.endpoint = endpoint
+        
+    def create_from_file(self, localfile, remoteblob, mimetype='text/plain', metadata={}):
+        self.create(self, open(localfile, "rb"), remoteblob, mimetype='text/plain', metadata={})
             
-    def create(self, localfile, remoteblob, mimetype=None, metadata={}):
-        """Create a new blob from a local file"""
+    def create(self, content_object, remoteblob, mimetype='text/plain', metadata={}):
+        """Create a new blob from a file object, e.g. file or StringIO. """
         
         # put relevant headers
         headers = {
@@ -22,18 +25,27 @@ class BlobOperations():
                    'Content-Type': CDMI_DATA,
                    }
         
-        # read-in the value
-        f = open(localfile, "rb")
-        content = f.read()
-        f.close()
+        # read-in the value        
+        content = content_object.read()
+        content_object.close()
+        
         data = {'value': content,
                 'mimetype': mimetype,
                 'metadata': metadata                
                 }
         
         req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'PUT', json.dumps(data), headers)
-        f = urllib2.urlopen(req);
-        return f.read()
+        try:
+            f = urllib2.urlopen(req)
+            return f.read()
+        except urllib2.HTTPError, e:
+            # urllib2 throws error if the code is 201 CREATED, which is a normal thing in CDMI
+            if e.code == 201:
+                return f.read()
+            else:
+                raise e
+        
+        
     
     def update(self, localfile, remoteblob , mimetype=None, metadata={}):
         """Update a remote blob with new data."""

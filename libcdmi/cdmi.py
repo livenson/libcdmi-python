@@ -1,7 +1,8 @@
 from blob_operations import BlobOperations
 
 import urllib2
-from vcdm.container_operations import ContainerOperations
+from container_operations import ContainerOperations
+from common import CDMIErrorProcessor
 
 class CDMIConnection():
     
@@ -21,17 +22,20 @@ class CDMIConnection():
                           uri=endpoint,
                           user=credentials['user'],
                           passwd=credentials['password'])
-        opener = urllib2.build_opener(auth_handler, urllib2.HTTPSHandler()) 
+        opener = urllib2.build_opener(auth_handler, urllib2.HTTPSHandler(), CDMIErrorProcessor()) 
         urllib2.install_opener(opener)
         
         self.blob_proxy = BlobOperations(endpoint)
         self.container_proxy = ContainerOperations(endpoint)
         
         
-    def create_blob(self, localfile, remoteblob, mimetype=None, metadata={}):
+    def create_blob_from_file(self, localfile, remoteblob, mimetype=None, metadata={}):
         """Create a new blob from a local file"""
-        return self.blob_proxy.create(localfile, remoteblob, mimetype, metadata)
-        
+        return self.blob_proxy.create_from_file(localfile, remoteblob, mimetype, metadata)
+
+    def create_blob(self, content_object, remoteblob, mimetype=None, metadata={}):
+        """Create a new blob from a file object (file, StringIO)."""
+        return self.blob_proxy.create(content_object, remoteblob, mimetype, metadata)        
     
     def update_blob(self, localfile, remoteblob, mimetype=None, metadata={}):
         """Update a remote blob with new data."""

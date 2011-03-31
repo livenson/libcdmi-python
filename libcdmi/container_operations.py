@@ -1,5 +1,5 @@
 import urllib2
-from vcdm.common import CDMI_CONTAINER, CDMIRequestWithMethod, CDMI_OBJECT
+from common import CDMI_CONTAINER, CDMIRequestWithMethod, CDMI_OBJECT
 
 try:
     import json

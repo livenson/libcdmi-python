@@ -16,8 +16,8 @@ remote_container2 = '/mydata/more'
 conn = cdmi.CDMIConnection(endpoint, credentials)
 
 # blob operations
-conn.create_blob(localfile, remoteblob, mimetype='text/plain')
-conn.update_blob(localfile, remoteblob, mimetype='text/plain')
+conn.create_blob_from_file(localfile, remoteblob, mimetype='text/plain')
+conn.update_blob_from_file(localfile, remoteblob, mimetype='text/plain')
 
 value = conn.read_blob(remoteblob)
 print "=== Value ==\n%s\n" % value
