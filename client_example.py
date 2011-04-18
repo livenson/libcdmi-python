@@ -1,6 +1,6 @@
 # sample client of a CDMI service
 
-from vcdm import cdmi
+from libcdmi import cdmi
 
 endpoint = "http://localhost:2364/"
 credentials = {'user': 'aaa',
