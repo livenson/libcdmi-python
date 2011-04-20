@@ -1,5 +1,5 @@
 import urllib2
-from common import CDMIRequestWithMethod, CDMI_DATA, CDMI_OBJECT
+from libcdmi.common import CDMIRequestWithMethod, CDMI_DATA, CDMI_OBJECT
    
 try:
     import json
@@ -74,4 +74,4 @@ class BlobOperations():
                    }
         
         req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'DELETE', None, headers)
-        urllib2.urlopen(req).read();
+        urllib2.urlopen(req).read()

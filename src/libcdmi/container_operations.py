@@ -1,5 +1,5 @@
 import urllib2
-from common import CDMI_CONTAINER, CDMIRequestWithMethod, CDMI_OBJECT
+from libcdmi.common import CDMI_CONTAINER, CDMIRequestWithMethod, CDMI_OBJECT
 
 try:
     import json
@@ -14,21 +14,18 @@ class ContainerOperations():
         self.endpoint = endpoint
         
     def create(self, remote_container, metadata={}):
-        """Create a new container. """
-        
+        """Create a new container. """        
         # put relevant headers
         headers = {
                    'Accept': CDMI_CONTAINER,
                    'Content-Type': CDMI_CONTAINER,
-                   }
-                
+                   }                
         data = {
                 'metadata': metadata                
                 }
         
         req = CDMIRequestWithMethod(self.endpoint + remote_container, 'PUT', json.dumps(data), headers)
-        f = urllib2.urlopen(req);
-        return f.read()
+        return urllib2.urlopen(req).read()
     
     def update(self, remote_container, metadata={}):
         """Update a remote container with new data."""
@@ -41,8 +38,7 @@ class ContainerOperations():
         headers = {
                    'Accept': CDMI_CONTAINER,
                    'Content-Type': CDMI_OBJECT,
-                   }        
-        
+                   }
         req = CDMIRequestWithMethod(self.endpoint + remote_container, 'GET', None, headers)
         res = urllib2.urlopen(req)
         
@@ -57,4 +53,4 @@ class ContainerOperations():
                    }
         
         req = CDMIRequestWithMethod(self.endpoint + remote_container, 'DELETE', None, headers)
-        urllib2.urlopen(req)
+        return urllib2.urlopen(req)

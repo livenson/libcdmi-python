@@ -1,3 +1,7 @@
+"""
+Common classes and variables.  
+"""
+
 import urllib2
 from urllib2 import HTTPErrorProcessor
 
@@ -12,7 +16,7 @@ class CDMIRequestWithMethod(urllib2.Request):
     
     Inspired by: http://abhinandh.com/post/2383952338/making-a-http-delete-request-with-urllib2
     """
-    def __init__(self, url, method, data=None, headers={},\
+    def __init__(self, url, method, data=None, headers={}, \
         origin_req_host=None, unverifiable=False):
         self._method = method
         
@@ -20,7 +24,7 @@ class CDMIRequestWithMethod(urllib2.Request):
         headers['User-agent'] = 'libcdmi-python/0.1'
         headers['X-CDMI-Specification-Version'] = '1.0'
         
-        urllib2.Request.__init__(self, url, data, headers,\
+        urllib2.Request.__init__(self, url, data, headers, \
                  origin_req_host, unverifiable)
 
     def get_method(self):
@@ -30,8 +34,10 @@ class CDMIRequestWithMethod(urllib2.Request):
             return urllib2.Request.get_method(self)
     
 class CDMIErrorProcessor(HTTPErrorProcessor):
-    """Default HTTPErrorProcessor is too paranoic about the http codes. CDMI is using almost all of the 2xx codes,
-    default processor only accepts 200 and 206 as non-exceptional."""
+    """Default HTTPErrorProcessor is too paranoic about the http codes. CDMI 
+    is using almost all of the 2xx codes, default processor only 
+    accepts 200 and 206 as non-exceptional.
+    """
     handler_order = 1000  # after all other processing
 
     def http_response(self, request, response):
