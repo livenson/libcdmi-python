@@ -14,7 +14,7 @@ class BlobOperations():
         self.endpoint = endpoint
         
     def create_from_file(self, localfile, remoteblob, mimetype='text/plain', metadata={}):
-        self.create(self, open(localfile, "rb"), remoteblob, mimetype='text/plain', metadata={})
+        self.create(open(localfile, "rb"), remoteblob, mimetype, metadata)
             
     def create(self, content_object, remoteblob, mimetype='text/plain', metadata={}):
         """Create a new blob from a file object, e.g. file or StringIO. """
@@ -35,7 +35,7 @@ class BlobOperations():
                 }
         
         req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'PUT', json.dumps(data), headers)
-        try:
+        try:            
             f = urllib2.urlopen(req)
             return f.read()
         except urllib2.HTTPError, e:
