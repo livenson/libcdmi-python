@@ -16,13 +16,14 @@ class CDMIRequestWithMethod(urllib2.Request):
     
     Inspired by: http://abhinandh.com/post/2383952338/making-a-http-delete-request-with-urllib2
     """
-    def __init__(self, url, method, data=None, headers={}, \
+    def __init__(self, url, method, data=None, cdmi_object=True, headers={}, \
         origin_req_host=None, unverifiable=False):
         self._method = method
         
         # add custom always-on CDMI headers
         headers['User-agent'] = 'libcdmi-python/0.1'
-        headers['X-CDMI-Specification-Version'] = '1.0'
+        if cdmi_object: 
+            headers['X-CDMI-Specification-Version'] = '1.0'
         
         urllib2.Request.__init__(self, url, data, headers, \
                  origin_req_host, unverifiable)

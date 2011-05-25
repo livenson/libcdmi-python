@@ -23,6 +23,7 @@ conn = cdmi.CDMIConnection(endpoint, credentials)
 
 # blob operations
 conn.blob_proxy.create_from_file(localfile, remoteblob, mimetype='text/plain')
+conn.blob_proxy.create_from_file(localfile, remoteblob + "_nocdmi", )
 
 value = conn.blob_proxy.read(remoteblob)
 print "=== Value ==\n%s\n" % value

@@ -40,8 +40,7 @@ class ContainerOperations():
                    'Content-Type': CDMI_OBJECT,
                    }
         req = CDMIRequestWithMethod(self.endpoint + remote_container, 'GET', None, headers)
-        res = urllib2.urlopen(req)
-        
+        res = urllib2.urlopen(req)        
         return json.loads(res.read())['children']
         
     
