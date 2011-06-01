@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='libcdmi',
-      version='0.1.0',
+      version='0.1.1',
       description='Client library for CDMI services.',
       author='Ilja Livenson',
       author_email='ilja.livenson@gmail.com',

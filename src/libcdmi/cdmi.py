@@ -22,6 +22,7 @@ class CDMIConnection():
                           uri=endpoint,
                           user=credentials['user'],
                           passwd=credentials['password'])
+        # TODO: add required server-side and client-side certificate validation for https connections 
         opener = urllib2.build_opener(auth_handler, urllib2.HTTPSHandler(), CDMIErrorProcessor()) 
         urllib2.install_opener(opener)
         
