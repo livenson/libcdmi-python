@@ -5,7 +5,7 @@ import os
 from libcdmi import cdmi
 
 
-endpoint = "http://cdmi.pdc2.pdc.kth.se:2364/"
+endpoint = "http://localhost:2364/"
 credentials = {'user': 'aaa',
                'password': 'aaa'}
 

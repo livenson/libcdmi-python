@@ -19,12 +19,12 @@ class ContainerOperations():
         headers = {
                    'Accept': CDMI_CONTAINER,
                    'Content-Type': CDMI_CONTAINER,
-                   }                
+                   }
         data = {
                 'metadata': metadata                
                 }
         
-        req = CDMIRequestWithMethod(self.endpoint + remote_container, 'PUT', json.dumps(data), headers)
+        req = CDMIRequestWithMethod(self.endpoint + remote_container, 'PUT', json.dumps(data), headers=headers)
         return urllib2.urlopen(req).read()
     
     def update(self, remote_container, metadata={}):
@@ -39,17 +39,11 @@ class ContainerOperations():
                    'Accept': CDMI_CONTAINER,
                    'Content-Type': CDMI_OBJECT,
                    }
-        req = CDMIRequestWithMethod(self.endpoint + remote_container, 'GET', None, headers)
+        req = CDMIRequestWithMethod(self.endpoint + remote_container, 'GET', headers=headers)
         res = urllib2.urlopen(req)        
-        return json.loads(res.read())['children']
-        
-    
+        return json.loads(res.read())
+            
     def delete(self, remote_container):
         """Delete specified container."""
-        headers = {
-                   'Accept': CDMI_CONTAINER,
-                   'Content-Type': CDMI_CONTAINER,
-                   }
-        
-        req = CDMIRequestWithMethod(self.endpoint + remote_container, 'DELETE', None, headers)
+        req = CDMIRequestWithMethod(self.endpoint + remote_container + '/', 'DELETE')
         return urllib2.urlopen(req)

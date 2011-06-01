@@ -6,10 +6,10 @@ import urllib2
 from urllib2 import HTTPErrorProcessor
 
 # MIME content types
-CDMI_CONTAINER = 'application/vnd.org.snia.cdmi.container+json'
-CDMI_CAPABILITIES = 'application/vnd.org.snia.cdmi.capabilities+json'
-CDMI_OBJECT = 'application/vnd.org.snia.cdmi.object+json'
-CDMI_DATA = 'application/vnd.org.snia.cdmi.dataobject+json'
+CDMI_CONTAINER = 'application/cdmi-container'
+CDMI_CAPABILITIES = 'application/cdmi-capabilities'
+CDMI_OBJECT = 'application/cdmi-object'
+CDMI_QUEUE = 'application/cdmi-queue'
 
 class CDMIRequestWithMethod(urllib2.Request):
     """Workaround for using custom command with urllib2.
@@ -23,7 +23,7 @@ class CDMIRequestWithMethod(urllib2.Request):
         # add custom always-on CDMI headers
         headers['User-agent'] = 'libcdmi-python/0.1'
         if cdmi_object: 
-            headers['X-CDMI-Specification-Version'] = '1.0'
+            headers['X-CDMI-Specification-Version'] = '1.0.1h'
         
         urllib2.Request.__init__(self, url, data, headers, \
                  origin_req_host, unverifiable)

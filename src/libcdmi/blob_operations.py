@@ -1,5 +1,5 @@
 import urllib2
-from libcdmi.common import CDMIRequestWithMethod, CDMI_DATA, CDMI_OBJECT
+from libcdmi.common import CDMIRequestWithMethod, CDMI_OBJECT
    
 try:
     import json
@@ -13,70 +13,90 @@ class BlobOperations():
         self.endpoint = endpoint
         
     def create_from_file(self, localfile, remoteblob, mimetype='text/plain', cdmi_object=True, metadata={}):
-        if cdmi_object:
-            self.create(open(localfile, "rb"), remoteblob, mimetype, metadata)
-        else:
-            self.create_noncdmi(open(localfile, "rb"), remoteblob, mimetype)
-            
-    def create(self, content_object, remoteblob, mimetype='text/plain', metadata={}):
-        """Create a new blob from a file object, e.g. file or StringIO. """
+        return self.create(open(localfile, "rb"), remoteblob, mimetype, cdmi_object, metadata)       
         
+    def create(self, content_object, remoteblob, mimetype='text/plain', cdmi_object=True, metadata={}):
+        if cdmi_object:
+            return self.create_cdmi(content_object, remoteblob, mimetype, metadata)
+        else:
+            return self.create_noncdmi(content_object, remoteblob, mimetype)
+    
+    def update_from_file(self, localfile, remoteblob , mimetype=None, cdmi_object=True, metadata={}):
+        return self.update(open(localfile, "rb"), remoteblob, mimetype, cdmi_object, metadata)
+    
+    def update(self, content_object, remoteblob , mimetype=None, cdmi_object=True, metadata={}):
+        if cdmi_object: 
+            return self.update_cdmi(content_object, remoteblob , mimetype, metadata)
+        else:
+            # XXX Warning - metadata will not be forwarded 
+            return self.update_noncdmi(content_object, remoteblob , mimetype)
+    
+    def read(self, remoteblob, cdmi_object=True):
+        if cdmi_object:
+            return self.read_cdmi(remoteblob)
+        else:
+            return self.read_noncdmi(remoteblob) 
+        
+    def delete(self, remoteblob, cdmi_object=True):
+        if cdmi_object: 
+            return self.delete_cdmi(remoteblob)
+        else:
+            return self.delete_noncdmi(remoteblob)
+    
+    #------ CDMI operations ------#  
+    
+    def create_cdmi(self, content_object, remoteblob, mimetype='text/plain', metadata={}):
+        """Create a new blob from a file object, e.g. file or StringIO. """
         # put relevant headers
         headers = {
-                   'Accept': CDMI_DATA,
-                   'Content-Type': CDMI_DATA,
+                   'Accept': CDMI_OBJECT,
+                   'Content-Type': CDMI_OBJECT,
                    }
         
         # read-in the value        
         content = content_object.read()
         content_object.close()
         
-        data = {'value': content,
+        data = {
+                'value': content,
                 'mimetype': mimetype,
                 'metadata': metadata                
                 }
         
-        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'PUT', json.dumps(data), headers)
-        try:            
+        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'PUT', json.dumps(data), headers=headers)
+        try:
             f = urllib2.urlopen(req)
-            return f.read()
+            return json.loads(f.read())
         except urllib2.HTTPError, e:
             # urllib2 throws error if the code is 201 CREATED, which is a normal thing in CDMI
             if e.code == 201:
-                return f.read()
+                return json.loads(f.read())
             else:
                 raise e
     
-    def update(self, localfile, remoteblob , mimetype=None, metadata={}):
+    def update_cdmi(self, localfile, remoteblob , mimetype=None, metadata={}):
         """Update a remote blob with new data."""
         # XXX for now we don't differentiate between update and create
-        return self.create(localfile, remoteblob, mimetype, metadata)
+        return self.create_cdmi(localfile, remoteblob, mimetype, metadata)
     
-    def read(self, remoteblob):
-        """Read contents of a blob"""
+    def read_cdmi(self, remoteblob):
+        """Read contents of a blob. Returns JSON-encoded metadata and data."""
         # put relevant headers
         headers = {
-                   'Accept': CDMI_DATA,
-                   'Content-Type': CDMI_OBJECT,
+                   'Accept': CDMI_OBJECT,
                    }        
-        
-        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'GET', None, headers)
-        res = urllib2.urlopen(req)
-        
-        return json.loads(res.read())['value']
+        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'GET', headers=headers)
+        res = urllib2.urlopen(req)        
+        return json.loads(res.read())
         
     
-    def delete(self, remoteblob):
-        """Delete specified blob"""
-        headers = {
-                   'Accept': CDMI_DATA,
-                   'Content-Type': CDMI_DATA,
-                   }
-        
-        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'DELETE', None, headers)
-        urllib2.urlopen(req).read()
+    def delete_cdmi(self, remoteblob):
+        """Delete specified blob"""        
+        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'DELETE')
+        f = urllib2.urlopen(req)
+        f.close()
     
-    #------ Non-CMDI operations ------#  
+    #------ Non-CDMI operations ------#  
     
     def create_noncdmi(self, content_object, remoteblob, mimetype='text/plain'):
         content = content_object.read()
@@ -84,7 +104,7 @@ class BlobOperations():
         headers = {
                    'Content-Type': mimetype,
                    }  
-        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'GET', content, 
+        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'PUT', content, 
                                     cdmi_object=False, headers=headers)
         try:            
             f = urllib2.urlopen(req)
@@ -99,10 +119,18 @@ class BlobOperations():
     def update_noncdmi(self, content_object, remoteblob, mimetype='text/plain'):
         return self.create_noncdmi(content_object, remoteblob, mimetype)
     
-    def read_noncdmi(self):
-        pass
+    def read_noncdmi(self, remoteblob):
+        """Read contents of a blob. Returns contents of the remote blob."""
+        # put relevant headers
+        headers = {
+                   'Accept': CDMI_OBJECT,
+                   }                
+        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'GET', cdmi_object=False, headers=headers)
+        res = urllib2.urlopen(req)
+        return res.read()
     
-    def delete_noncdmi(self):
-        pass 
-    
-    
+    def delete_noncdmi(self, remoteblob):
+        """Delete specified blob"""
+        req = CDMIRequestWithMethod(self.endpoint + remoteblob, 'DELETE', cdmi_object=False)
+        f = urllib2.urlopen(req)
+        f.close()
