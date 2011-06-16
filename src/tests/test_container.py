@@ -15,10 +15,17 @@ class TestContainerOperations(ConnectionWrapper):
         """Run through a scenario testing all blob functions."""
         conn = cdmi.CDMIConnection(self.endpoint, self.credentials)             
         conn.container_proxy.create(self.base + self.remote_container, {'hard work': 'success'})
-        conn.container_proxy.update(self.base + self.remote_container, {'luck': 'success'})
-        print conn.container_proxy.read(self.base + self.remote_container)
-        conn.container_proxy.delete(self.base + self.remote_container)
+        conn.container_proxy.update(self.base + self.remote_container, {'luck': 'success'})        
+        
+        conn.container_proxy.delete(self.base + self.remote_container)                
         self.assertRaises(HTTPError, conn.container_proxy.delete, self.base + self.remote_container + "_non_existing")        
     
+    def testGetContainerFiles(self):
+        conn = cdmi.CDMIConnection(self.endpoint, self.credentials)
+        conn.container_proxy.create(self.base + self.remote_container, {'hard work': 'success'})
+        conn.get_container_files(self.base, 'tmp')
+        import shutil
+        shutil.rmtree('tmp')
+        
 if __name__ == "__main__":
     unittest.main()

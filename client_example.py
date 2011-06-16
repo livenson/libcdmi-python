@@ -4,7 +4,6 @@ import os
 
 from libcdmi import cdmi
 
-
 endpoint = "http://localhost:2364/"
 credentials = {'user': 'aaa',
                'password': 'aaa'}

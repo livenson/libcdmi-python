@@ -18,6 +18,7 @@ class CDMIConnection():
         
         # install authenticated opener for all of the urllib2 calls
         auth_handler = urllib2.HTTPDigestAuthHandler()
+        urllib2.HTTPPasswordMgrWithDefaultRealm()
         auth_handler.add_password(realm=None,
                           uri=endpoint,
                           user=credentials['user'],
@@ -28,4 +29,16 @@ class CDMIConnection():
         
         self.blob_proxy = BlobOperations(endpoint)
         self.container_proxy = ContainerOperations(endpoint)
+    
         
+    def get_container_files(self, remote_container, local_folder):
+        """Download blobs from a specified remote_container to a local_folder"""
+        container = self.container_proxy.read(remote_container)
+        import os    
+        if not os.path.exists(local_folder):
+            os.makedirs(local_folder)        
+        for c in container['children']:            
+            if not c.endswith("/"):
+                cf = open(os.path.join(local_folder, c), 'w')              
+                fnm = remote_container + "/" + os.path.basename(c)              
+                cf.write(self.blob_proxy.read(fnm, False))
