@@ -26,8 +26,9 @@ class TestBlobOperations(ConnectionWrapper):
             conn.blob_proxy.create_from_file(localfile_1, self.remote_container + self.remote_blob, 
                                                    mimetype='text/plain', cdmi_object=cdmi_object)        
             conn.blob_proxy.read(self.remote_container + self.remote_blob, cdmi_object=cdmi_object)
+            conn.blob_proxy.head(self.remote_container + self.remote_blob, cdmi_object=cdmi_object)
             conn.blob_proxy.update_from_file(localfile_1, self.remote_container + self.remote_blob, 
-                                             mimetype='text/plain', cdmi_object=cdmi_object, metadata={'santa':'claus'})
+                                             mimetype='text/plain', cdmi_object=cdmi_object, metadata={'desired_backend':'office_1'})
             conn.blob_proxy.delete(self.remote_container + self.remote_blob)
             # check that we get an error when deleting non-existing file
             self.assertRaises(HTTPError, conn.blob_proxy.delete, self.remote_container + self.remote_blob + "_non_existing")
