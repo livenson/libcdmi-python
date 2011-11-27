@@ -1,12 +1,14 @@
 import urllib2
+
 from libcdmi.common import CDMI_CONTAINER, CDMIRequestWithMethod, CDMI_OBJECT
 
 try:
     import json
 except ImportError:
     import simplejson as json
-   
-class ContainerOperations():
+
+
+class ContainerOperations(object):
         
     endpoint = None
     

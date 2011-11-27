@@ -1,15 +1,11 @@
-"""
-Common classes and variables.  
-"""
-
 import urllib2
-from urllib2 import HTTPErrorProcessor
 
 # MIME content types
 CDMI_CONTAINER = 'application/cdmi-container'
 CDMI_CAPABILITIES = 'application/cdmi-capabilities'
 CDMI_OBJECT = 'application/cdmi-object'
 CDMI_QUEUE = 'application/cdmi-queue'
+
 
 class CDMIRequestWithMethod(urllib2.Request):
     """Workaround for using custom command with urllib2.
@@ -34,7 +30,7 @@ class CDMIRequestWithMethod(urllib2.Request):
         else:
             return urllib2.Request.get_method(self)
     
-class CDMIErrorProcessor(HTTPErrorProcessor):
+class CDMIErrorProcessor(urllib2.HTTPErrorProcessor):
     """Default HTTPErrorProcessor is too paranoic about the http codes. CDMI 
     is using almost all of the 2xx codes, default processor only 
     accepts 200 and 206 as non-exceptional.
@@ -44,7 +40,7 @@ class CDMIErrorProcessor(HTTPErrorProcessor):
     def http_response(self, request, response):
         code, msg, hdrs = response.code, response.msg, response.info()
 
-        if code not in range(200, 206):
+        if code not in range(200, 206) and code != 302:
             response = self.parent.error(
                 'http', request, response, code, msg, hdrs)
 
