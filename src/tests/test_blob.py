@@ -33,7 +33,7 @@ class TestBlobOperations(ConnectionWrapper):
             # check that we get an error when deleting non-existing file
             self.assertRaises(HTTPError, conn.blob_proxy.delete, self.remote_container + self.remote_blob + "_non_existing")
         
-        os.unlink(localfile_1)    
+        os.unlink(localfile_1)
         os.unlink(localfile_2)
     
 if __name__ == "__main__":

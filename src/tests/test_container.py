@@ -1,9 +1,13 @@
 from __future__ import with_statement
+
 import unittest
-from connection_wrapper import ConnectionWrapper
-from libcdmi import cdmi
 import random
 from urllib2 import HTTPError
+
+from libcdmi import cdmi
+
+from connection_wrapper import ConnectionWrapper
+
 
 class TestContainerOperations(ConnectionWrapper):
 
@@ -19,13 +23,6 @@ class TestContainerOperations(ConnectionWrapper):
         
         conn.container_proxy.delete(self.base + self.remote_container)                
         self.assertRaises(HTTPError, conn.container_proxy.delete, self.base + self.remote_container + "_non_existing")        
-    
-    def testGetContainerFiles(self):
-        conn = cdmi.CDMIConnection(self.endpoint, self.credentials)
-        conn.container_proxy.create(self.base + self.remote_container, {'hard work': 'success'})
-        conn.get_container_files(self.base, 'tmp')
-        import shutil
-        shutil.rmtree('tmp')
-        
+
 if __name__ == "__main__":
     unittest.main()
