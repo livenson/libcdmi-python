@@ -1,3 +1,7 @@
+"""
+Common classes and variables.
+"""
+
 import urllib2
 
 # MIME content types
@@ -9,31 +13,35 @@ CDMI_QUEUE = 'application/cdmi-queue'
 
 class CDMIRequestWithMethod(urllib2.Request):
     """Workaround for using custom command with urllib2.
-    
-    Inspired by: http://abhinandh.com/post/2383952338/making-a-http-delete-request-with-urllib2
+
+    Inspired by: http://abhinandh.com/post/2383952338/making-a-\
+            http-delete-request-with-urllib2
+
     """
-    def __init__(self, url, method, data=None, cdmi_object=True, headers={}, \
-        origin_req_host=None, unverifiable=False):
+    def __init__(self, url, method, data=None, cdmi_object=True, headers={},
+                 origin_req_host=None, unverifiable=False):
         self._method = method
-        
+
         # add custom always-on CDMI headers
         headers['User-agent'] = 'libcdmi-python/0.1'
-        if cdmi_object: 
+        if cdmi_object:
             headers['X-CDMI-Specification-Version'] = '1.0.1h'
-        
-        urllib2.Request.__init__(self, url, data, headers, \
-                 origin_req_host, unverifiable)
+
+        urllib2.Request.__init__(self, url, data, headers,
+                                 origin_req_host, unverifiable)
 
     def get_method(self):
         if self._method:
             return self._method
         else:
             return urllib2.Request.get_method(self)
-    
+
+
 class CDMIErrorProcessor(urllib2.HTTPErrorProcessor):
-    """Default HTTPErrorProcessor is too paranoic about the http codes. CDMI 
-    is using almost all of the 2xx codes, default processor only 
+    """Default HTTPErrorProcessor is too paranoic about the http codes. CDMI
+    is using almost all of the 2xx codes, default processor only
     accepts 200 and 206 as non-exceptional.
+
     """
     handler_order = 1000  # after all other processing
 
@@ -47,4 +55,3 @@ class CDMIErrorProcessor(urllib2.HTTPErrorProcessor):
         return response
 
     https_response = http_response
-    

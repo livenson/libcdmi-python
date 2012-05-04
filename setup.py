@@ -10,5 +10,6 @@ setup(name='libcdmi',
       url='https://github.com/livenson/libcdmi-python',
       license='BSD (3-clause)',
       packages=['libcdmi'],
-      package_dir = {'': 'src'}      
+      package_dir = {'': 'src'},
+      requires = ['poster']
      )
